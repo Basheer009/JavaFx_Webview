@@ -1,13 +1,7 @@
 package com.github.methmal66;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
