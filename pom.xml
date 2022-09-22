@@ -46,11 +46,35 @@
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.github.methmal66.App</mainClass>
+                            <mainClass>com.github.methmal66.Main</mainClass>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                  <execution>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                      <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                              <Main-Class>${project.groupId}.Main</Main-Class>
+                              <Build-Number>${project.version}</Build-Number>
+                            </manifestEntries>
+                        </transformer>
+                       </transformers>
+                      <outputFile>./${project.artifactId}-${project.version}.jar</outputFile>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
         </plugins>
     </build>
 </project>
