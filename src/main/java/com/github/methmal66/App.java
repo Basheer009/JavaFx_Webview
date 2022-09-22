@@ -20,7 +20,7 @@ public class App extends Application {
 
         WebView webView = new WebView();
         WebEngine webEngine = webView.getEngine();
-        Path index = Path.of("static", "pages", "index.html");
+        Path index = Path.of("src", "main", "resources", "pages", "index.html");
         String content = Files.readString(index);
         webEngine.loadContent(content);
 
