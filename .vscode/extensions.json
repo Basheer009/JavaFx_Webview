@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "vscjava.vscode-java-pack",
+        "eamodio.gitlens",
+        "oderwat.indent-rainbow",
+        "ahmadawais.shades-of-purple",
+        "usernamehw.errorlens",
+        "visualstudioexptteam.vscodeintellicode",
+        "esbenp.prettier-vscode"
+    ]
+}
