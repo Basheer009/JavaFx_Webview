@@ -1,8 +1,9 @@
 # JavaFX WebView Template
 A template to create java gui applications with javafx webview component. Remember to rename your group id and artifact id. Then rename the folders accordingly.
 
-## Clone this repo
-`git clone https://github.com/methmal66/javafx-webview-template`
+[//]: # (## Clone this repo)
+
+[//]: # (`git clone https://github.com/methmal66/javafx-webview-template`)
 
 ## Install dependencies
 `mvn install`
