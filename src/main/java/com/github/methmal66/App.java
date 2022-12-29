@@ -19,6 +19,7 @@ public class App extends Application {
         primaryStage.setTitle("Beaver");
 
         WebView webView = new WebView();
+
         WebEngine webEngine = webView.getEngine();
         Path index = Path.of("src", "main", "resources", "pages", "index.html");
         String content = Files.readString(index);
