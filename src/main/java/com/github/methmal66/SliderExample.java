@@ -18,6 +18,8 @@ import javafx.scene.Group;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 
 public class SliderExample extends Application {
 
@@ -31,22 +33,25 @@ public class SliderExample extends Application {
             StackPane root = new StackPane();
             final ProgressBar progress = new ProgressBar();
             // create    a webview object
-            WebView w = new WebView();
+            WebView webView = new WebView();
 
-            root.getChildren().addAll(w, progress);
+            root.getChildren().addAll(webView, progress);
             // get the web engine
-            WebEngine e = w.getEngine();
-            w.setContextMenuEnabled(false);
-            createContextMenu(w);
+            WebEngine webEngine = webView.getEngine();
+            webView.setContextMenuEnabled(false);
+            createContextMenu(webView);
 
             // load a website
             String baseUrl = "http://192.168.1.108:8080";
             e.load(baseUrl);
             e.getLoadWorker().stateProperty().addListener(
-                    (ov, oldState, newState) -> {
-                        if (newState == Worker.State.SUCCEEDED) {
-                            // hide progress bar then page is ready
-                            progress.setVisible(false);
+                    new ChangeListener<Worker.State>() {
+                        @Override
+                        public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState) {
+                            if (newState == Worker.State.SUCCEEDED) {
+                                // hide progress bar then page is ready
+                                progress.setVisible(false);
+                                getMacAddress();
 
                         } else if (newState == Worker.State.FAILED) {
                             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -65,9 +70,10 @@ public class SliderExample extends Application {
                             }
                         }
                     });
+
             // create a scene
-            Scene scene = new Scene(root, w.getPrefWidth(),
-                    w.getPrefHeight());
+            Scene scene = new Scene(root, webView.getPrefWidth(),
+                    webView.getPrefHeight());
 
             // set the scene
             stage.setScene(scene);
@@ -78,6 +84,7 @@ public class SliderExample extends Application {
 
             System.out.println(e.getMessage());
         }
+
     }
 
     private void createContextMenu(WebView webView) {
@@ -85,9 +92,16 @@ public class SliderExample extends Application {
         MenuItem reload = new MenuItem("تحديث");
         MenuItem back = new MenuItem("الرجوع");
         reload.setOnAction(e -> {
-            webView.getEngine().reload();
-            webView.getEngine().load(webView.getEngine().getLocation());
+//            webView.getEngine().reload();
+//            webView.getEngine().load(webView.getEngine().getLocation());
             System.out.println(webView.getEngine().getLocation());
+            getMacAddress();
+            webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue == Worker.State.SUCCEEDED) {
+                    // The initial page has finished loading, so you can now call reload()
+                    webView.getEngine().reload();
+                }
+            });
         });
         back.setOnAction(e -> webView.getEngine().executeScript("history.back()"));
 //        reload.setOnAction(e -> webView.getEngine().executeScript("location.reload()"));
@@ -100,6 +114,21 @@ public class SliderExample extends Application {
                 contextMenu.hide();
             }
         });
+    }
+
+    private void getMacAddress(){
+        try {
+            NetworkInterface networkInterface = NetworkInterface.getByName("eth0");
+            byte[] macAddress = networkInterface.getHardwareAddress();
+            // Print the MAC address in hexadecimal format
+            if (macAddress != null) {
+                for (int i = 0; i < macAddress.length; i++) {
+                    System.out.format("%02X%s", macAddress[i], (i < macAddress.length - 1) ? "-" : "");
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     // Main Method
