@@ -45,31 +45,28 @@ public class SliderExample extends Application {
             String baseUrl = "http://192.168.1.108:8080";
             e.load(baseUrl);
             e.getLoadWorker().stateProperty().addListener(
-                    new ChangeListener<Worker.State>() {
-                        @Override
-                        public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState) {
-                            if (newState == Worker.State.SUCCEEDED) {
-                                // hide progress bar then page is ready
-                                progress.setVisible(false);
-                                getMacAddress();
+                    (ov, oldState, newState) -> {
+                        if (newState == Worker.State.SUCCEEDED) {
+                            // hide progress bar then page is ready
+                            progress.setVisible(false);
+                            getMacAddress();
 
-                        } else if (newState == Worker.State.FAILED) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("حدث خطاء");
-                            alert.setHeaderText("حدث خطاء");
-                            alert.setContentText("لا يوجد اتصال بالسيرفر! يرجى التاكد من صحة الشبكة");
-                            ButtonType buttonTypeReload = new ButtonType("تحديث");
-                            ButtonType buttonTypeCancel = new ButtonType("إلغاء", ButtonBar.ButtonData.CANCEL_CLOSE);
-                            alert.getButtonTypes().setAll(buttonTypeReload, buttonTypeCancel);
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.get() == buttonTypeReload) {
-                                e.load(baseUrl);
-                                System.out.println(baseUrl);
-                            } else {
-                                stage.close();
-                            }
+                    } else if (newState == Worker.State.FAILED) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("حدث خطاء");
+                        alert.setHeaderText("حدث خطاء");
+                        alert.setContentText("لا يوجد اتصال بالسيرفر! يرجى التاكد من صحة الشبكة");
+                        ButtonType buttonTypeReload = new ButtonType("تحديث");
+                        ButtonType buttonTypeCancel = new ButtonType("إلغاء", ButtonBar.ButtonData.CANCEL_CLOSE);
+                        alert.getButtonTypes().setAll(buttonTypeReload, buttonTypeCancel);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.get() == buttonTypeReload) {
+                            e.load(baseUrl);
+                            System.out.println(baseUrl);
+                        } else {
+                            stage.close();
                         }
-                        }
+                    }
                     });
 
             // create a scene
@@ -92,20 +89,8 @@ public class SliderExample extends Application {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem reload = new MenuItem("تحديث");
         MenuItem back = new MenuItem("الرجوع");
-        reload.setOnAction(e -> {
-//            webView.getEngine().reload();
-//            webView.getEngine().load(webView.getEngine().getLocation());
-            System.out.println(webView.getEngine().getLocation());
-            getMacAddress();
-            webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue == Worker.State.SUCCEEDED) {
-                    // The initial page has finished loading, so you can now call reload()
-                    webView.getEngine().reload();
-                }
-            });
-        });
-        back.setOnAction(e -> webView.getEngine().executeScript("history.back()"));
-//        reload.setOnAction(e -> webView.getEngine().executeScript("location.reload()"));
+        reload.setOnAction(event -> webView.getEngine().reload());
+        back.setOnAction(event -> webView.getEngine().getHistory().go(-1));
         contextMenu.getItems().addAll(reload, back);
 
         webView.setOnMousePressed(e -> {
