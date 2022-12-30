@@ -37,7 +37,7 @@ public class SliderExample extends Application {
 
             root.getChildren().addAll(webView, progress);
             // get the web engine
-            WebEngine webEngine = webView.getEngine();
+            WebEngine e = webView.getEngine();
             webView.setContextMenuEnabled(false);
             createContextMenu(webView);
 
@@ -68,6 +68,7 @@ public class SliderExample extends Application {
                             } else {
                                 stage.close();
                             }
+                        }
                         }
                     });
 
