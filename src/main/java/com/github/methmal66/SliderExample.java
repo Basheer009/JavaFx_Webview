@@ -16,6 +16,9 @@ import javafx.scene.canvas.*;
 import javafx.scene.web.*;
 import javafx.scene.Group;
 
+import java.util.Objects;
+import java.util.Optional;
+
 public class SliderExample extends Application {
 
     // launch the application
@@ -24,7 +27,7 @@ public class SliderExample extends Application {
 
             // set title for the stage
             stage.setTitle("النظام المعلوماتي");
-            stage.getIcons().add(new Image("http://192.168.1.108:8080/images/icon_cid.png"));
+            stage.getIcons().add(new Image(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("icon_cid.png"))));
             StackPane root = new StackPane();
             final ProgressBar progress = new ProgressBar();
             // create    a webview object
@@ -37,15 +40,28 @@ public class SliderExample extends Application {
             createContextMenu(w);
 
             // load a website
-            e.load("http://192.168.1.108:8080");
+            String baseUrl = "http://192.168.1.108:8080";
+            e.load(baseUrl);
             e.getLoadWorker().stateProperty().addListener(
-                    new ChangeListener<Worker.State>() {
-                        @Override
-                        public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState) {
-                            if (newState == Worker.State.SUCCEEDED) {
-                                // hide progress bar then page is ready
-                                progress.setVisible(false);
+                    (ov, oldState, newState) -> {
+                        if (newState == Worker.State.SUCCEEDED) {
+                            // hide progress bar then page is ready
+                            progress.setVisible(false);
 
+                        } else if (newState == Worker.State.FAILED) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("حدث خطاء");
+                            alert.setHeaderText("حدث خطاء");
+                            alert.setContentText("لا يوجد اتصال بالسيرفر! يرجى التاكد من صحة الشبكة");
+                            ButtonType buttonTypeReload = new ButtonType("تحديث");
+                            ButtonType buttonTypeCancel = new ButtonType("إلغاء", ButtonBar.ButtonData.CANCEL_CLOSE);
+                            alert.getButtonTypes().setAll(buttonTypeReload, buttonTypeCancel);
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.get() == buttonTypeReload) {
+                                e.load(baseUrl);
+                                System.out.println(baseUrl);
+                            } else {
+                                stage.close();
                             }
                         }
                     });
@@ -75,7 +91,7 @@ public class SliderExample extends Application {
         });
         back.setOnAction(e -> webView.getEngine().executeScript("history.back()"));
 //        reload.setOnAction(e -> webView.getEngine().executeScript("location.reload()"));
-        contextMenu.getItems().addAll(reload,back);
+        contextMenu.getItems().addAll(reload, back);
 
         webView.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
